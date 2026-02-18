@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Location Love Journey</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro-screen {
+            text-align: center;
+        }
+
+        .intro-screen h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .intro-screen p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .permission-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .permission-box strong {
+            color: #856404;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-top: 20px;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .journey-screen {
+            display: none;
+        }
+
+        .progress-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            color: #666;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .day-cards {
+            display: grid;
+            gap: 20px;
+        }
+
+        .day-card {
+            background: #ffffff;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+
+        .day-card.current {
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .day-card.completed {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-color: #4ade80;
+        }
+
+        .day-card.locked {
+            opacity: 0.5;
+            background: #f5f5f5;
+        }
+
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .day-title {
+            font-size: 1.5em;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .day-badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .badge-locked {
+            background: #94a3b8;
+            color: white;
+        }
+
+        .badge-current {
+            background: #667eea;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .badge-completed {
+            background: #4ade80;
+            color: white;
+        }
+
+        .riddle-section {
+            background: #fffbf0;
+            border: 2px dashed #d4af37;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .riddle-text {
+            color: #333;
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .location-status {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .location-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .distance-info {
+            font-size: 1.1em;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .checking-location {
+            background: #e0f2fe;
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .letter-preview {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #d4af37;
+        }
+
+        .open-letter-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .open-letter-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(240, 147, 251, 0.4);
+        }
+
+        .letter-screen {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .letter-container {
+            background: #fffbf0;
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .letter-header {
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .letter-day {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .letter-title {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .letter-body {
+            color: #333;
+            line-height: 2;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            white-space: pre-line;
+        }
+
+        .letter-signature {
+            text-align: right;
+            font-style: italic;
+            color: #667eea;
+            font-size: 1.2em;
+            margin-top: 30px;
+        }
+
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+            display: block;
+            margin: 20px auto 0;
+        }
+
+        .back-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .completion-screen {
+            display: none;
+            text-align: center;
+        }
+
+        .completion-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+
+        .completion-screen h2 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .completion-message {
+            font-size: 1.2em;
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .locked-message {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+            font-style: italic;
+        }
+
+        .unlock-celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            z-index: 1000;
+            text-align: center;
+            display: none;
+            animation: popIn 0.5s;
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 999;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+    <div class="unlock-celebration" id="celebration">
+        <div style="font-size: 5em; margin-bottom: 20px;">🎉💌🎉</div>
+        <h2 style="color: #667eea; margin-bottom: 15px;">You Found It!</h2>
+        <p style="font-size: 1.2em; color: #555; margin-bottom: 25px;">Your letter is now unlocked!</p>
+        <button class="open-letter-btn" onclick="closeCelebration()">Read Your Letter</button>
+    </div>
+
+    <div class="game-container">
+        <div class="header">
+            <h1>💌 Our Location Love Journey 💌</h1>
+            <p>Follow the riddles to special places and unlock letters</p>
+        </div>
+
+        <div class="content">
+            <!-- Intro Screen -->
+            <div class="intro-screen" id="introScreen">
+                <h2>A Treasure Hunt of Love ❤️</h2>
+                <p>I've hidden letters for you at special places that mean something to us. Each day, you'll receive a riddle. Solve it, go to that location, and a letter will unlock for you.</p>
+                
+                <div class="permission-box">
+                    <p><strong>📍 Location Required</strong></p>
+                    <p style="margin-top: 10px; font-size: 0.95em;">This game needs to access your location to know when you've reached each special place. Your location is only used for this game and is never stored or shared.</p>
+                </div>
+
+                <p><strong>How it works:</strong></p>
+                <p style="font-size: 0.95em;">
+                    • One riddle unlocks each day<br>
+                    • Solve the riddle to figure out where to go<br>
+                    • Travel to that location<br>
+                    • When you arrive, your letter will automatically unlock<br>
+                    • Take your time - the riddles will wait for you
+                </p>
+                <button class="start-btn" onclick="startJourney()">Begin Day 1</button>
+            </div>
+
+            <!-- Journey Screen -->
+            <div class="journey-screen" id="journeyScreen">
+                <div class="progress-section">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text">
+                        <strong><span id="completedCount">0</span> of <span id="totalDays">5</span></strong> letters discovered
+                    </div>
+                </div>
+
+                <div class="day-cards" id="dayCards"></div>
+            </div>
+
+            <!-- Letter Screen -->
+            <div class="letter-screen" id="letterScreen">
+                <div class="letter-container">
+                    <div class="letter-header">
+                        <div class="letter-day" id="letterDay"></div>
+                        <h2 class="letter-title" id="letterTitle"></h2>
+                    </div>
+                    <div class="letter-body" id="letterBody"></div>
+                    <div class="letter-signature">With all my love,<br>Forever yours ❤️</div>
+                </div>
+                <button class="back-btn" onclick="backToJourney()">Back to Journey</button>
+            </div>
+
+            <!-- Completion Screen -->
+            <div class="completion-screen" id="completionScreen">
+                <div class="completion-icon">🎉💖✨</div>
+                <h2>Our Journey is Complete!</h2>
+                <p class="completion-message">
+                    You traveled to all our special places and discovered every letter. This week was my way of taking you through the moments and places that made us "us". Thank you for going on this adventure with me. I love you.
+                </p>
+                <button class="start-btn" onclick="reviewLetters()">Review All Letters</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ====================================================================
+        // CUSTOMIZE THIS SECTION - ADD YOUR RIDDLES, LOCATIONS, AND LETTERS
+        // ====================================================================
+        
+        const weekData = [
+            {
+                day: 1,
+                title: "Day 1",
+                riddle: "\n Woh jagah bohot khaas h \n\n Mere dil ke kaafi paas h \n\n Saath chale the jaha se pehli baar hum \n\n Dekhe kya woh jagah apko bhi yaad h?",
+                // Coordinates for the location (get from Google Maps)
+                latitude: 23.154319,  // REPLACE with actual latitude
+                longitude: 72.886707, // REPLACE with actual longitude
+                
+                letter: {
+                    title: "The Beginning of Us",
+                    body: "Our meetings were never normal they were always filled with lots and lots of fun, emotions, and sometimes debates. From a third persons POV we might appear like two dumbos jumping around the pavements doing random hand and butt actions. To be very honest I never expeted that the step which I took once by gathering so much courage would turn out so beautiful "
+                }
+            },
+            {
+                day: 2,
+                title: "Day 2",
+                riddle: "\n Har raat ghumte the hum paanch yaar \n\n Fir chahe din hota tha buddhwaar ya shukrwaar \n\n Ek hi jagah baithte the hum baar-baar \n\n Wo jagah jaha maine kiya tha pehli baar pyaar ka izhar?",
+                latitude: 23.153984,  // REPLACE
+                longitude: 72.886822, // REPLACE
+                
+                letter: {
+                    title: "That Perfect Day",
+                    body: "Write your Day 2 letter here.\n\nShare memories from your first date or a special moment together at this place."
+                }
+            },
+            {
+                day: 3,
+                title: "Day 3",
+                riddle: "\n Dur tu mujhse hui \n\n Dur me tujhse hua \n\n Pyaar ka ehsaas tujhe bhi pehli baar hua \n\n Wo jagah jaha me aapse dobara milne ko raazi hua?",
+                latitude: 23.152133,  // REPLACE
+                longitude: 72.881614, // REPLACE
+                
+                letter: {
+                    title: "The Moment I Knew",
+                    body: "Write your Day 3 letter here.\n\nShare what this place means to you both."
+                }
+            },
+            {
+                day: 4,
+                title: "Day 4",
+                riddle: "\n Ek dusre ko dekh kar har dard bhul jaate hn \n\n Hum khud kya cheez h wo bhul aapme mashroof ho jaate hn \n\n Wo jagah jaha hum ek dusre ke bahon me dher saari baat kr paate hn ",
+                latitude: 23.152793,  // REPLACE
+                longitude: 72.883781, // REPLACE
+                
+                letter: {
+                    title: "The Words I Needed to Say",
+                    body: "Write your Day 4 letter here.\n\nTalk about your feelings, your commitment, what she means to you."
+                }
+            },
+            {
+                day: 5,
+                title: "Day 5",
+                riddle: "\n Apki aankhon me dekh nashe me chuur ho gaye \n\n Khud ko kaabu me na rakhne ke liye mazboor ho gaye \n\n Wo jagah jaha hum pehli baar do jism ek jaan ho gaye",
+                latitude: 23.039364,  // REPLACE
+                longitude: 72.565807, // REPLACE
+                
+                letter: {
+                    title: "Our Forever",
+                    body: "Write your final letter here.\n\nThis is the grand finale - your dreams together, your commitment, why she's your everything."
+                }
+            }
+        ];
+
+        // ====================================================================
+        // HOW TO GET COORDINATES:
+        // 1. Go to Google Maps
+        // 2. Right-click on the exact spot
+        // 3. Click the coordinates at the top to copy them
+        // 4. Paste them into latitude and longitude above
+        // 
+        // NOTE: The letter will unlock when she's within 50 meters of the location
+        // ====================================================================
+
+        // Game state
+        let currentDay = 1;
+        let completedDays = [];
+        let locationWatchId = null;
+        let currentUnlockingDay = null;
+
+        // Initialize game
+        function startJourney() {
+            // Request location permission
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        document.getElementById('introScreen').style.display = 'none';
+                        document.getElementById('journeyScreen').style.display = 'block';
+                        loadGameState();
+                        renderDays();
+                        startLocationTracking();
+                    },
+                    (error) => {
+                        alert("Location access is required for this game to work. Please enable location services and refresh the page.");
+                    }
+                );
+            } else {
+                alert("Your device doesn't support location services. This game requires GPS to work.");
+            }
+        }
+
+        // Load saved progress
+        function loadGameState() {
+            const saved = localStorage.getItem('locationJourneyProgress');
+            if (saved) {
+                const state = JSON.parse(saved);
+                completedDays = state.completedDays || [];
+                currentDay = state.currentDay || 1;
+            }
+        }
+
+        // Save progress
+        function saveGameState() {
+            const state = {
+                completedDays: completedDays,
+                currentDay: currentDay
+            };
+            localStorage.setItem('locationJourneyProgress', JSON.stringify(state));
+        }
+
+        // Start tracking location
+        function startLocationTracking() {
+            if ("geolocation" in navigator) {
+                locationWatchId = navigator.geolocation.watchPosition(
+                    checkProximity,
+                    (error) => console.log("Location tracking error:", error),
+                    { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
+                );
+            }
+        }
+
+        // Check if user is near target location
+        function checkProximity(position) {
+            const userLat = position.coords.latitude;
+            const userLon = position.coords.longitude;
+
+            // Only check for current day
+            if (currentDay <= weekData.length && !completedDays.includes(currentDay)) {
+                const dayData = weekData[currentDay - 1];
+                const distance = calculateDistance(userLat, userLon, dayData.latitude, dayData.longitude);
+
+                // If within 50 meters, unlock!
+                if (distance <= 50) {
+                    unlockDay(currentDay);
+                }
+            }
+        }
+
+        // Calculate distance between two coordinates (Haversine formula)
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371e3; // Earth's radius in meters
+            const φ1 = lat1 * Math.PI / 180;
+            const φ2 = lat2 * Math.PI / 180;
+            const Δφ = (lat2 - lat1) * Math.PI / 180;
+            const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+            const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                     Math.cos(φ1) * Math.cos(φ2) *
+                     Math.sin(Δλ/2) * Math.sin(Δλ/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+            return R * c; // Distance in meters
+        }
+
+        // Unlock a day
+        function unlockDay(dayNum) {
+            if (completedDays.includes(dayNum) || currentUnlockingDay === dayNum) {
+                return; // Already unlocked or unlocking
+            }
+            
+            currentUnlockingDay = dayNum;
+            
+            // Show celebration
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('celebration').style.display = 'block';
+            
+            // Mark as completed
+            if (!completedDays.includes(dayNum)) {
+                completedDays.push(dayNum);
+            }
+            currentDay = Math.min(dayNum + 1, weekData.length + 1);
+            saveGameState();
+            
+            // Play a sound if available
+            try {
+                const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSyGz/LTgzgHHGm98OScTgwOUrDn77ZnHAU7k9n1z3ksBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGgtDm+H0ul4iBS1+zPLaizsIHWu/8OKgUQ0PVLXp7qxbGg==');
+                audio.play().catch(() => {});
+            } catch (e) {}
+        }
+
+        // Close celebration and show letter
+        function closeCelebration() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('celebration').style.display = 'none';
+            openLetter(currentUnlockingDay);
+            currentUnlockingDay = null;
+        }
+
+        // Render all day cards
+        function renderDays() {
+            const container = document.getElementById('dayCards');
+            container.innerHTML = '';
+
+            weekData.forEach((dayData, index) => {
+                const dayNum = index + 1;
+                const isCompleted = completedDays.includes(dayNum);
+                const isCurrent = dayNum === currentDay;
+                const isLocked = dayNum > currentDay;
+
+                const card = document.createElement('div');
+                card.className = `day-card ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''} ${isLocked ? 'locked' : ''}`;
+                
+                let badgeClass = 'badge-locked';
+                let badgeText = '🔒 Locked';
+                
+                if (isCompleted) {
+                    badgeClass = 'badge-completed';
+                    badgeText = '✓ Completed';
+                } else if (isCurrent) {
+                    badgeClass = 'badge-current';
+                    badgeText = '📍 Today\'s Quest';
+                }
+
+                let content = `
+                    <div class="day-header">
+                        <div class="day-title">${dayData.title}</div>
+                        <div class="day-badge ${badgeClass}">${badgeText}</div>
+                    </div>
+                `;
+
+                if (isLocked) {
+                    content += '<div class="locked-message">🔒 Complete the previous days first</div>';
+                } else if (isCompleted) {
+                    content += `
+                        <div class="letter-preview">
+                            <p style="color: #4ade80; margin-bottom: 15px;">✓ Location Found! Letter Unlocked</p>
+                            <button class="open-letter-btn" onclick="openLetter(${dayNum})">Read Letter Again 💌</button>
+                        </div>
+                    `;
+                } else {
+                    content += `
+                        <div class="riddle-section">
+                            <div class="riddle-text">${dayData.riddle}</div>
+                            <div class="location-status">
+                                <div class="location-icon">📍</div>
+                                <div style="font-size: 1.1em; color: #333; margin-bottom: 10px;">
+                                    <strong>Find the location to unlock this letter</strong>
+                                </div>
+                                <div class="checking-location">
+                                    🔍 Waiting for you to arrive at the special place...
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = content;
+                container.appendChild(card);
+            });
+
+            updateProgress();
+        }
+
+        // Open letter
+        function openLetter(dayNum) {
+            const dayData = weekData[dayNum - 1];
+            
+            document.getElementById('journeyScreen').style.display = 'none';
+            document.getElementById('letterScreen').style.display = 'block';
+            
+            document.getElementById('letterDay').textContent = `Day ${dayNum}`;
+            document.getElementById('letterTitle').textContent = dayData.letter.title;
+            document.getElementById('letterBody').textContent = dayData.letter.body;
+        }
+
+        // Back to journey
+        function backToJourney() {
+            document.getElementById('letterScreen').style.display = 'none';
+            
+            if (completedDays.length === weekData.length) {
+                document.getElementById('completionScreen').style.display = 'block';
+            } else {
+                document.getElementById('journeyScreen').style.display = 'block';
+                renderDays();
+            }
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const progress = (completedDays.length / weekData.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('completedCount').textContent = completedDays.length;
+            document.getElementById('totalDays').textContent = weekData.length;
+        }
+
+        // Review all letters
+        function reviewLetters() {
+            document.getElementById('completionScreen').style.display = 'none';
+            document.getElementById('journeyScreen').style.display = 'block';
+            renderDays();
+        }
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (locationWatchId) {
+                navigator.geolocation.clearWatch(locationWatchId);
+            }
+        });
+    </script>
+</body>
+</html>
